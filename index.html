@@ -58,7 +58,7 @@ th{font-size:12px;color:var(--mut)}.num{text-align:right;white-space:nowrap}
 <script>
 const $=s=>document.querySelector(s);
 const KEY='pm_v2';
-const CFG={url:'',key:''};/* вставьте Project URL и anon key из Supabase */
+const CFG={url:'https://pudlfrlxmalxdrlonexb.supabase.co',key:'sb_publishable_jFhfFKQSkkYtTBCVOHJUyw_53O6PP_1'};/* вставьте Project URL и anon key из Supabase */
 const cloud=()=>!!(CFG.url&&CFG.key);let tok=null;
 const fmt=n=>new Intl.NumberFormat('ru-RU').format(Math.round(n||0))+' сум';
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -275,7 +275,7 @@ function delMod(p){if(!confirm('Удалить модератора?'))return;if
 async function chPw(){const v=$('#np').value;if(v.length<4)return toast('Минимум 4 символа');if(cloud()){try{await api('/auth/v1/user',{m:'PUT',body:{password:v}});toast('Пароль изменён')}catch(e){toast(e.message)}$('#np').value='';return}me().pw=await hash(me().phone+v);save();$('#np').value='';toast('Пароль изменён')}
 /* ---- облако (Supabase) ---- */
 const mail=ph=>'u'+dg(ph)+'@example.com';
-async function api(path,o={},retry=1){const r=await fetch(CFG.url+path,{method:o.m||'GET',headers:{apikey:CFG.key,Authorization:'Bearer '+(tok||CFG.key),'Content-Type':'application/json',...(o.h||{})},body:o.body?JSON.stringify(o.body):undefined});
+async function api(path,o={},retry=1){const hd={apikey:CFG.key,'Content-Type':'application/json',...(o.h||{})};if(tok&&!o.anon)hd.Authorization='Bearer '+tok;const r=await fetch(CFG.url+path,{method:o.m||'GET',headers:hd,body:o.body?JSON.stringify(o.body):undefined});
 if(r.status===401&&tok&&retry){try{await rf();return api(path,o,0)}catch(e){tok=null}}
 const t=await r.text();let j=null;try{j=t?JSON.parse(t):null}catch(e){j=t}
 if(!r.ok)throw new Error((j&&(j.message||j.msg||j.error_description||j.error))||r.statusText);return j}
@@ -291,13 +291,13 @@ db.orders=tok?(await api('/rest/v1/'+(st?'orders':'orders_mine')+'?select=*&orde
 }catch(e){toast('Нет связи с базой: '+e.message)}render()}
 let _pt;function pushSet(){if(!isOwner())return;clearTimeout(_pt);_pt=setTimeout(()=>api('/rest/v1/settings?on_conflict=id',{m:'POST',body:{id:1,data:db.settings},h:{Prefer:'resolution=merge-duplicates'}}).catch(e=>toast('Настройки не сохранены: '+e.message)),700)}
 async function cauth(t){const ph=normPh($('#ph').value);if(!ph)return toast('Введите корректный номер');const pw=$('#pw').value;if(pw.length<6)return toast('Пароль от 6 символов');
-try{let j;if(t==='up'){const nm=$('#nm').value.trim();if(!nm)return toast('Введите имя');j=await api('/auth/v1/signup',{m:'POST',body:{email:mail(ph),password:pw,data:{name:nm}},h:{Authorization:'Bearer '+CFG.key}});if(!j.access_token)throw new Error('В Supabase отключите Confirm email')}
-else j=await api('/auth/v1/token?grant_type=password',{m:'POST',body:{email:mail(ph),password:pw},h:{Authorization:'Bearer '+CFG.key}});
+try{let j;if(t==='up'){const nm=$('#nm').value.trim();if(!nm)return toast('Введите имя');j=await api('/auth/v1/signup',{m:'POST',body:{email:mail(ph),password:pw,data:{name:nm}},anon:true});if(!j.access_token)throw new Error('В Supabase отключите Confirm email')}
+else j=await api('/auth/v1/token?grant_type=password',{m:'POST',body:{email:mail(ph),password:pw},anon:true});
 setSess(j);await pull();closeM();toast('Вы вошли');if(isAdmin())go('admin')}catch(e){toast(/Invalid login/i.test(e.message)?'Неверный номер или пароль':/already|registered/i.test(e.message)?'Этот номер уже зарегистрирован':e.message)}}
 async function cplace(ad){try{const id=await api('/rest/v1/rpc/place_order',{m:'POST',body:{items:db.cart.map(i=>({pid:i.pid,vid:i.vid,color:i.color,qty:i.qty})),addr:ad,pay:$('#pay').value,note:$('#cm').value.trim()}});db.cart=[];save();await pull();const o=db.orders.find(x=>x.id==id);
 modal(`<h2>Заказ №${id} принят</h2><p style="margin:8px 0">Сумма: <b>${fmt(o?o.total:0)}</b>. Мы свяжемся с вами по номеру ${esc(me()?me().phone:'')}.</p>${contactLinks()}<button style="margin-top:10px" onclick="closeM()">Хорошо</button>`)}catch(e){toast(e.message)}}
 function cput(p){const {id,active,...data}=p;return api('/rest/v1/products?on_conflict=id',{m:'POST',body:{id,active,data},h:{Prefer:'resolution=merge-duplicates'}}).then(()=>{closeM();toast('Товар сохранён');return pull()}).catch(e=>toast(e.message))}
-async function cmod(ph,nm,pw){try{await api('/auth/v1/signup',{m:'POST',body:{email:mail(ph),password:pw,data:{name:nm}},h:{Authorization:'Bearer '+CFG.key}});await api('/rest/v1/profiles?phone=eq.'+encodeURIComponent(ph),{m:'PATCH',body:{role:'mod'}});await pull();toast('Модератор создан')}catch(e){toast(e.message)}}
+async function cmod(ph,nm,pw){try{await api('/auth/v1/signup',{m:'POST',body:{email:mail(ph),password:pw,data:{name:nm}},anon:true});await api('/rest/v1/profiles?phone=eq.'+encodeURIComponent(ph),{m:'PATCH',body:{role:'mod'}});await pull();toast('Модератор создан')}catch(e){toast(e.message)}}
 /* старт */
 (async()=>{if(!cloud()&&!db.users.some(u=>u.role==='admin')){db.users.push({phone:'+998900000000',name:'Креатор',pw:await hash('+998900000000admin123'),role:'admin',created:Date.now()});save()}
 try{const t=window.Telegram?.WebApp;if(t){t.ready();t.expand()}}catch(e){}if(cloud())await cinit();render()})();
