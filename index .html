@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Parfum Market</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Manrope:wght@400;600;800&display=swap" rel="stylesheet">
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+:root{--bg:#0b0a07;--ink:#f6efdc;--rose:#ffd000;--brass:#ffd000;--line:#2a2415;--card:#14120c;--mut:#b3a982;--ok:#8fd9a8;--bad:#ff7a6b;--gold:linear-gradient(135deg,color-mix(in srgb,var(--rose) 60%,#fff),var(--rose) 50%,color-mix(in srgb,var(--rose) 78%,#6b4a00))}
+*{box-sizing:border-box;margin:0}
+body{font:14px/1.45 Manrope,system-ui,sans-serif;background:var(--bg);color:var(--ink);padding-bottom:env(safe-area-inset-bottom)}
+h1,h2,h3{font-family:'Cormorant Garamond',Georgia,serif;font-weight:700}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:0;border-radius:10px;padding:10px 16px;background:var(--gold);color:#1a1300;font-weight:800;transition:filter .2s,transform .15s}button:hover{filter:brightness(1.08)}button:active{transform:scale(.98)}
+button.g{background:#171717;color:var(--rose);border:1px solid var(--line)}
+button.r{background:var(--gold);color:#1a1300}button.x{background:var(--bad);color:#000}button:disabled{opacity:.4;cursor:default}
+button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{outline:2px solid var(--rose);outline-offset:2px}
+input,select,textarea{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:#111;color:var(--ink)}
+select option{background:#111}
+label{display:block;font-weight:600;margin:10px 0 4px;font-size:13px}
+header{position:sticky;top:0;z-index:5;background:var(--bg);color:var(--rose);border-bottom:1px solid var(--rose);padding:calc(10px + env(safe-area-inset-top)) 16px 10px;display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+header h1{font-size:26px;cursor:pointer;letter-spacing:.5px}
+header nav{display:flex;gap:8px;flex-wrap:wrap}header button{background:#171717;color:var(--rose);border:1px solid var(--line);padding:8px 12px}
+main{max-width:1100px;margin:0 auto;padding:16px}
+.hero{border:1px solid var(--line);border-radius:16px;padding:30px 20px;box-shadow:0 0 40px #ffd0000f;margin-bottom:14px;background:linear-gradient(135deg,#000,#1c1500)}
+.hero h2{font-size:34px;line-height:1.15;background:var(--gold);-webkit-background-clip:text;background-clip:text;color:transparent}.hero p{color:var(--mut);margin-top:6px}
+.bar{display:grid;grid-template-columns:2fr 1fr 1fr;gap:8px;margin-bottom:14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;cursor:pointer}.card{transition:border-color .2s,box-shadow .2s}.card:hover{border-color:var(--rose);box-shadow:0 0 24px #ffd00026}
+.card .im{aspect-ratio:1;background:linear-gradient(160deg,#1c1500,#000);display:flex;align-items:center;justify-content:center}
+.card .im img,.big img{width:100%;height:100%;object-fit:cover}
+.card .t{padding:12px}.mut{color:var(--mut);font-size:12px}
+.pr{font-weight:800;font-size:16px;color:var(--rose)}.badge{display:inline-block;font-size:11px;padding:2px 8px;border-radius:99px;background:#241d05;color:var(--rose);margin:2px 4px 0 0}
+.ov{position:fixed;inset:0;background:#000c;z-index:20;display:flex;align-items:flex-end;justify-content:center}
+.box{background:#0d0d0d;border:1px solid var(--line);width:100%;max-width:720px;max-height:92vh;overflow:auto;border-radius:18px 18px 0 0;padding:18px}
+@media(min-width:760px){.ov{align-items:center}.box{border-radius:18px}}
+.big{aspect-ratio:1;max-height:300px;margin:0 auto 10px;background:linear-gradient(160deg,#1c1500,#000);border-radius:14px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{padding:8px 12px;border:1px solid var(--line);background:#171717;color:var(--ink);border-radius:99px;font-weight:600}
+.chip.on{background:var(--gold);color:#1a1300;border-color:var(--rose)}
+.lnk{display:inline-block;padding:9px 14px;border-radius:10px;border:1px solid var(--rose);color:var(--rose);text-decoration:none;font-weight:700}
+.sw{width:30px;height:30px;border-radius:50%;border:2px solid var(--line);padding:0}.sw.on{outline:2px solid var(--rose);outline-offset:2px}
+.row{display:flex;gap:10px;align-items:center;justify-content:space-between}
+.qty{display:inline-flex;align-items:center;gap:8px}.qty button{padding:6px 12px}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:7px 6px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{font-size:12px;color:var(--mut)}.num{text-align:right;white-space:nowrap}
+.tabs{display:flex;gap:8px;margin-bottom:14px;overflow:auto}
+.kp{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin:12px 0}
+.kp div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px}.kp b{display:block;font-size:17px;color:var(--rose)}
+.pnl{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:14px;overflow:auto}
+.st{font-size:12px;padding:2px 8px;border-radius:99px;background:#241d05;color:var(--rose)}
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--rose);color:#000;font-weight:700;padding:10px 16px;border-radius:10px;z-index:50;display:none}
+.v2{display:grid;grid-template-columns:repeat(5,1fr) auto;gap:6px;align-items:end;margin-bottom:6px}
+@media(prefers-reduced-motion:no-preference){.box{animation:up .18s ease-out}@keyframes up{from{transform:translateY(16px);opacity:.4}}}
+</style></head><body>
+<header><h1 onclick="go('shop')" id="logo">Parfum Market</h1>
+<nav><button onclick="openGuide()">Инструкция</button><button onclick="openCart()">Корзина <b id="cartN">0</b></button><button id="acc" onclick="openAcc()">Войти</button></nav></header>
+<main id="app"></main><div id="modal"></div><div id="toast"></div>
+<script>
+const $=s=>document.querySelector(s);
+const KEY='pm_v2';
+const CFG={url:'',key:''};/* вставьте Project URL и anon key из Supabase */
+const cloud=()=>!!(CFG.url&&CFG.key);let tok=null;
+const fmt=n=>new Intl.NumberFormat('ru-RU').format(Math.round(n||0))+' сум';
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid=()=>Math.random().toString(36).slice(2,9);
+const COLORS={'Золотой':'#d4af37','Чёрный':'#1c1c1c','Прозрачный':'#dfeaf2','Розовый':'#e8a0b4','Синий':'#3a6fb0','Красный':'#b3202a','Серебряный':'#b8bcc4','Зелёный':'#3d8b6e'};
+const hex=n=>COLORS[n]||'#c9a24b';
+const ST={new:'Новый',paid:'Оплачен',ship:'Отправлен',done:'Выполнен',cancel:'Отменён'};
+async function hash(s){try{const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode('pm:'+s));return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}catch(e){return s}}
+const V=(ml,type,price,cost,stock)=>({id:uid(),ml,type,price,cost,stock});
+function seed(){return{seq:1000,session:null,cart:[],users:[],orders:[],
+settings:{shop:'Parfum Market',vat:12,delivery:25000,freeFrom:500000,tiers:[{min:3,pct:5},{min:5,pct:10},{min:10,pct:15}],contacts:{phone:'',tg:'',wa:'',hours:'Ежедневно 9:00–21:00'},design:{gold:'#ffd000',bg:'#0b0a07',title:'Парфюм, который запоминают',sub:'Оригинальные ароматы с доставкой'}},
+products:[]}}
+function load(){try{const d=JSON.parse(localStorage.getItem(KEY));if(cloud()){const s=seed();s.cart=(d&&d.cart)||[];return s}if(d&&d.products){const g=d.settings&&d.settings.design;if(g&&g.gold==='#ffc400'&&g.bg==='#000000'){g.gold='#ffd000';g.bg='#0b0a07'}return d}}catch(e){}return seed()}
+let db=load(),ui={view:'shop',tab:'stats',q:'',g:'',s:'',range:'all'},pm=null,ed=null;
+function save(){if(cloud()){try{localStorage.setItem(KEY,JSON.stringify({cart:db.cart}))}catch(e){}pushSet();return}try{localStorage.setItem(KEY,JSON.stringify(db))}catch(e){toast('Память браузера заполнена. Уберите большие фото.')}}
+function toast(t){const e=$('#toast');e.textContent=t;e.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>e.style.display='none',2600)}
+const me=()=>db.users.find(u=>u.phone===db.session);
+const isAdmin=()=>['admin','mod'].includes(me()?.role);
+const isOwner=()=>me()?.role==='admin';
+const P=id=>db.products.find(p=>p.id===id);
+const cartCount=()=>db.cart.reduce((a,i)=>a+i.qty,0);
+/* ---- цены ---- */
+const tierPct=q=>{let p=0;for(const t of db.settings.tiers)if(q>=t.min&&t.pct>p)p=t.pct;return p};
+const unit=(v,q)=>Math.round(v.price*(100-tierPct(q))/100);
+const vatOf=(sum,r)=>Math.round(sum*r/(100+r));
+/* ---- картинка ---- */
+function bottle(p,color){if(p.img)return`<img src="${esc(p.img)}" alt="${esc(p.name)}">`;const c=hex(color||p.colors[0]);
+return`<svg viewBox="0 0 100 130" width="62%" aria-label="${esc(p.name)}"><rect x="40" y="6" width="20" height="14" rx="3" fill="#22121c"/><rect x="44" y="20" width="12" height="10" fill="#b58a3c"/><rect x="18" y="30" width="64" height="92" rx="14" fill="${c}" stroke="#22121c" stroke-opacity=".25"/><rect x="26" y="40" width="10" height="70" rx="5" fill="#fff" opacity=".35"/><rect x="34" y="66" width="40" height="28" rx="3" fill="#fff" opacity=".85"/><text x="54" y="84" font-size="7" text-anchor="middle" font-family="serif" fill="#22121c">${esc(p.name.slice(0,12))}</text></svg>`}
+/* ---- навигация ---- */
+function go(v){ui.view=v;render();scrollTo(0,0)}
+function render(){applyTheme();$('#cartN').textContent=cartCount();$('#acc').textContent=me()?(isOwner()?'Креатор':me().role==='mod'?'Модератор':me().name):'Войти';$('#logo').textContent=db.settings.shop;
+$('#app').innerHTML=ui.view==='admin'&&isAdmin()?adminView():shopView()}
+function modal(h){$('#modal').innerHTML=`<div class="ov" onclick="if(event.target===this)closeM()"><div class="box">${h}</div></div>`}
+const closeM=()=>$('#modal').innerHTML='';
+/* ---- магазин ---- */
+function shopView(){return`<div class="hero"><h2>${esc(db.settings.design.title)}</h2><p>${esc(db.settings.design.sub)}</p></div><div class="bar"><input id="q" placeholder="Поиск: название, бренд, ноты" value="${esc(ui.q)}" oninput="ui.q=this.value;grid()">
+<select onchange="ui.g=this.value;grid()"><option value="">Для всех</option>${['Женские','Мужские','Унисекс'].map(g=>`<option ${ui.g==g?'selected':''}>${g}</option>`).join('')}</select>
+<select onchange="ui.s=this.value;grid()"><option value="">Сначала новые</option><option value="a" ${ui.s=='a'?'selected':''}>Сначала дешёвые</option><option value="d" ${ui.s=='d'?'selected':''}>Сначала дорогие</option></select></div>
+<div id="grid" class="grid">${gridHTML()}</div><div class="pnl" style="margin-top:18px"><h3>Связаться с нами</h3>${contactLinks()}</div>`}
+const minP=p=>Math.min(...p.variants.map(v=>v.price));
+function gridHTML(){let l=db.products.filter(p=>p.active&&p.variants.length&&(!ui.g||p.gender===ui.g)&&(p.name+p.brand+p.notes).toLowerCase().includes(ui.q.toLowerCase()));
+if(ui.s)l.sort((a,b)=>ui.s==='a'?minP(a)-minP(b):minP(b)-minP(a));
+if(!db.products.length)return'<p class="mut">Магазин скоро откроется. Товары появятся здесь.</p>';if(!l.length)return'<p class="mut">Ничего не найдено. Измените поиск или фильтр.</p>';
+return l.map(p=>{const st=p.variants.reduce((a,v)=>a+v.stock,0);return`<div class="card" onclick="openP('${p.id}')"><div class="im">${bottle(p)}</div><div class="t"><div class="mut">${esc(p.brand)} · ${esc(p.gender)}</div><h3>${esc(p.name)}</h3><div class="pr">от ${fmt(minP(p))}</div>${[...new Set(p.variants.map(v=>v.type))].map(t=>`<span class="badge">${esc(t)}</span>`).join('')}${st?'':'<span class="badge" style="color:var(--bad)">Нет в наличии</span>'}</div></div>`}).join('')}
+const grid=()=>{$('#grid').innerHTML=gridHTML()};
+/* ---- карточка товара ---- */
+function openP(id){const p=P(id);const v=p.variants.find(v=>v.stock>0)||p.variants[0];pm={pid:id,vid:v.id,color:p.colors[0]||'',qty:1};showPM()}
+function showPM(){const p=P(pm.pid),v=p.variants.find(x=>x.id===pm.vid),pct=tierPct(pm.qty),u=unit(v,pm.qty);
+modal(`<div class="row"><h2>${esc(p.name)}</h2><button class="g" onclick="closeM()">Закрыть</button></div>
+<div class="big">${bottle(p,pm.color)}</div><div class="mut">${esc(p.brand)} · ${esc(p.gender)}</div><p style="margin:8px 0">${esc(p.desc)}</p><p class="mut">Ноты: ${esc(p.notes)}</p>
+<label>Объём и тип</label><div class="chips">${p.variants.map(x=>`<button class="chip ${x.id===v.id?'on':''}" onclick="pm.vid='${x.id}';pm.qty=Math.min(pm.qty,Math.max(1,${x.stock}));showPM()">${x.ml} мл · ${esc(x.type)} · ${fmt(x.price)}</button>`).join('')}</div>
+${p.colors.length?`<label>Цвет флакона: ${esc(pm.color)}</label><div class="chips">${p.colors.map(c=>`<button class="sw ${c===pm.color?'on':''}" style="background:${hex(c)}" aria-label="${esc(c)}" onclick="pm.color='${esc(c)}';showPM()"></button>`).join('')}</div>`:''}
+<label>Количество (в наличии: ${v.stock})</label><div class="qty"><button class="g" onclick="pmQ(-1)">−</button><b>${pm.qty}</b><button class="g" onclick="pmQ(1)">+</button></div>
+<div class="pnl" style="margin-top:12px"><div class="row"><span>Цена за штуку</span><b>${pct?`<s class="mut">${fmt(v.price)}</s> `:''}${fmt(u)}</b></div>
+${pct?`<div class="row"><span>Скидка за количество</span><b style="color:var(--ok)">−${pct}%</b></div>`:''}
+<div class="row"><span>Итого</span><b style="font-size:18px">${fmt(u*pm.qty)}</b></div>
+<p class="mut" style="margin-top:6px">Скидки: ${db.settings.tiers.map(t=>`от ${t.min} шт −${t.pct}%`).join(', ')}</p></div>
+<button class="r" style="width:100%" ${v.stock<1?'disabled':''} onclick="addCart()">${v.stock<1?'Нет в наличии':'Добавить в корзину'}</button>`)}
+function pmQ(d){const v=P(pm.pid).variants.find(x=>x.id===pm.vid);pm.qty=Math.max(1,Math.min(v.stock||1,pm.qty+d));showPM()}
+function addCart(){const f=db.cart.find(i=>i.pid===pm.pid&&i.vid===pm.vid&&i.color===pm.color);const v=P(pm.pid).variants.find(x=>x.id===pm.vid);
+const tot=db.cart.filter(i=>i.vid===pm.vid).reduce((a,i)=>a+i.qty,0)+pm.qty;if(tot>v.stock)return toast('Столько нет в наличии');
+f?f.qty+=pm.qty:db.cart.push({...pm});save();closeM();render();toast('Добавлено в корзину')}
+/* ---- корзина ---- */
+function cartTotals(){let sub=0;const lines=db.cart.map((i,n)=>{const p=P(i.pid),v=p&&p.variants.find(x=>x.id===i.vid);if(!v)return null;const u=unit(v,i.qty);sub+=u*i.qty;return{n,i,p,v,u}}).filter(Boolean);
+const s=db.settings,del=!lines.length||sub>=s.freeFrom?0:s.delivery,total=sub+del;return{lines,sub,del,total,vat:vatOf(total,s.vat)}}
+function openCart(){const c=cartTotals();if(!c.lines.length)return modal(`<h2>Корзина пуста</h2><p class="mut" style="margin:8px 0 14px">Выберите духи в каталоге.</p><button onclick="closeM()">В каталог</button>`);
+modal(`<div class="row"><h2>Корзина</h2><button class="g" onclick="closeM()">Закрыть</button></div>
+${c.lines.map(l=>`<div class="pnl"><div class="row"><b>${esc(l.p.name)}</b><button class="g" onclick="db.cart.splice(${l.n},1);save();openCart();render()">Убрать</button></div>
+<div class="mut">${l.v.ml} мл · ${esc(l.v.type)} · ${esc(l.i.color)}</div>
+<div class="row" style="margin-top:6px"><span class="qty"><button class="g" onclick="cq(${l.n},-1)">−</button><b>${l.i.qty}</b><button class="g" onclick="cq(${l.n},1)">+</button></span>
+<span class="num">${tierPct(l.i.qty)?`<s class="mut">${fmt(l.v.price)}</s> `:''}${fmt(l.u)} × ${l.i.qty} = <b>${fmt(l.u*l.i.qty)}</b></span></div></div>`).join('')}
+<div class="pnl"><div class="row"><span>Товары</span><span>${fmt(c.sub)}</span></div><div class="row"><span>Доставка${c.del?'':' (бесплатно)'}</span><span>${fmt(c.del)}</span></div>
+<div class="row"><b>К оплате</b><b style="font-size:18px">${fmt(c.total)}</b></div><div class="mut">В т.ч. НДС ${db.settings.vat}%: ${fmt(c.vat)}. Бесплатная доставка от ${fmt(db.settings.freeFrom)}.</div></div>
+<button class="r" style="width:100%" onclick="checkout()">Оформить заказ</button>`)}
+function cq(n,d){const i=db.cart[n],v=P(i.pid).variants.find(x=>x.id===i.vid);const other=db.cart.filter((x,k)=>k!==n&&x.vid===i.vid).reduce((a,x)=>a+x.qty,0);
+const q=i.qty+d;if(q<1)return;if(q+other>v.stock)return toast('Столько нет в наличии');i.qty=q;save();openCart()}
+function checkout(){if(!me()){toast('Войдите по номеру телефона');return openAcc()}
+modal(`<h2>Оформление</h2><label>Адрес доставки</label><textarea id="ad" rows="2" placeholder="Город, улица, дом, квартира"></textarea>
+<label>Оплата</label><select id="pay"><option>Наличными при получении</option><option>Переводом на карту</option><option>Payme / Click</option></select>
+<label>Комментарий</label><input id="cm" placeholder="Необязательно"><button class="r" style="width:100%;margin-top:14px" onclick="placeOrder()">Подтвердить заказ</button>`)}
+function placeOrder(){const ad=$('#ad').value.trim();if(ad.length<5)return toast('Укажите адрес доставки');if(cloud())return cplace(ad);const c=cartTotals();if(!c.lines.length)return;
+const need={};for(const l of c.lines)need[l.v.id]=(need[l.v.id]||0)+l.i.qty;
+for(const l of c.lines)if(need[l.v.id]>l.v.stock)return toast(`Недостаточно: ${l.p.name} ${l.v.ml} мл`);
+const s=db.settings;
+const o={id:++db.seq,date:Date.now(),phone:me().phone,name:me().name,addr:ad,pay:$('#pay').value,note:$('#cm').value.trim(),status:'new',vr:s.vat,
+items:c.lines.map(l=>({pid:l.p.id,vid:l.v.id,name:l.p.name,ml:l.v.ml,type:l.v.type,color:l.i.color,qty:l.i.qty,base:l.v.price,pct:tierPct(l.i.qty),unit:l.u,cost:l.v.cost})),
+sub:c.sub,del:c.del,total:c.total,vat:c.vat};
+for(const l of c.lines)l.v.stock-=l.i.qty;db.orders.push(o);db.cart=[];save();render();
+modal(`<h2>Заказ №${o.id} принят</h2><p style="margin:8px 0">Сумма: <b>${fmt(o.total)}</b>. Мы свяжемся с вами по номеру ${esc(o.phone)}.</p>${contactLinks()}<button style="margin-top:10px" onclick="closeM()">Хорошо</button>`)}
+/* ---- аккаунт ---- */
+function openAcc(tab){const u=me();if(!u)return authM(tab||'in');
+const mine=db.orders.filter(o=>o.phone===u.phone).reverse();
+modal(`<div class="row"><h2>${esc(u.name)}</h2><button class="g" onclick="closeM()">Закрыть</button></div><p class="mut">${esc(u.phone)}</p>
+<div class="row" style="margin:12px 0">${isAdmin()?'<button class="r" onclick="closeM();go(\'admin\')">Панель админа</button>':''}<button class="g" onclick="logout()">Выйти</button></div>
+<h3>Мои заказы</h3>${mine.length?mine.map(o=>`<div class="pnl"><div class="row"><b>№${o.id}</b><span class="st">${ST[o.status]}</span></div><div class="mut">${new Date(o.date).toLocaleString('ru-RU')}</div>${o.items.map(i=>`<div>${esc(i.name)} ${i.ml} мл ${esc(i.type)}, ${esc(i.color)} × ${i.qty}</div>`).join('')}<b>${fmt(o.total)}</b></div>`).join(''):'<p class="mut">Заказов пока нет.</p>'}`)}
+function authM(t){modal(`<div class="row"><h2>${t==='up'?'Регистрация':'Вход'}</h2><button class="g" onclick="closeM()">Закрыть</button></div>
+<div class="tabs" style="margin-top:10px"><button class="chip ${t!=='up'?'on':''}" onclick="authM('in')">Вход</button><button class="chip ${t==='up'?'on':''}" onclick="authM('up')">Регистрация</button></div>
+<label>Номер телефона</label><input id="ph" type="tel" placeholder="+998 90 123 45 67" autocomplete="tel">
+${t==='up'?'<label>Ваше имя</label><input id="nm" autocomplete="name">':''}
+<label>Пароль (от 4 символов)</label><input id="pw" type="password" autocomplete="${t==='up'?'new-password':'current-password'}">
+<button class="r" style="width:100%;margin-top:14px" onclick="auth('${t}')">${t==='up'?'Создать аккаунт':'Войти'}</button>`)}
+const normPh=s=>{const d=String(s).replace(/\D/g,'');return d.length>=9&&d.length<=13?'+'+(d.length===9?'998'+d:d):null};
+async function auth(t){if(cloud())return cauth(t);const ph=normPh($('#ph').value);if(!ph)return toast('Введите корректный номер');const pw=$('#pw').value;if(pw.length<4)return toast('Пароль слишком короткий');const h=await hash(ph+pw);
+if(t==='up'){const nm=$('#nm').value.trim();if(!nm)return toast('Введите имя');if(db.users.some(u=>u.phone===ph))return toast('Этот номер уже зарегистрирован');db.users.push({phone:ph,name:nm,pw:h,role:'user',created:Date.now()})}
+else{const u=db.users.find(u=>u.phone===ph);if(!u||u.pw!==h)return toast('Неверный номер или пароль')}
+db.session=ph;save();closeM();render();toast('Вы вошли');if(isAdmin())go('admin')}
+function logout(){if(cloud()){tok=null;localStorage.removeItem('pm_sess');closeM();go('shop');pull();return}db.session=null;save();closeM();go('shop')}
+/* ---- бухгалтерия ---- */
+const inRange=o=>{const d=Date.now()-o.date,D=864e5;return ui.range==='all'||(ui.range==='today'&&new Date(o.date).toDateString()===new Date().toDateString())||(ui.range==='7'&&d<7*D)||(ui.range==='30'&&d<30*D)};
+function calc(list){const a={n:0,rev:0,vat:0,net:0,cogs:0,disc:0,del:0,items:0,by:{}};
+for(const o of list){if(o.status==='cancel')continue;a.n++;a.rev+=o.total;a.vat+=o.vat;a.del+=o.del;let c=0;
+for(const i of o.items){c+=i.cost*i.qty;a.disc+=(i.base-i.unit)*i.qty;a.items+=i.qty;const b=a.by[i.pid]||(a.by[i.pid]={name:i.name,qty:0,rev:0,cogs:0});b.qty+=i.qty;b.rev+=i.unit*i.qty;b.cogs+=i.cost*i.qty}a.cogs+=c}
+a.net=a.rev-a.vat;a.profit=a.net-a.cogs;a.margin=a.net?a.profit/a.net*100:0;return a}
+/* ---- админка ---- */
+function adminView(){const o=isOwner(),tabs=o?[['stats','Бухгалтерия'],['orders','Заказы'],['prods','Товары'],['design','Дизайн'],['team','Команда'],['sets','Настройки']]:[['orders','Заказы'],['prods','Товары']];
+if(!tabs.some(x=>x[0]===ui.tab))ui.tab=tabs[0][0];const t=ui.tab;
+return`<div class="row"><h2>${o?'Панель креатора':'Панель модератора'}</h2><button class="g" onclick="openGuide('staff')">Инструкция</button></div><div class="tabs" style="margin-top:10px">${tabs.map(([k,n])=>`<button class="chip ${t===k?'on':''}" onclick="ui.tab='${k}';render()">${n}</button>`).join('')}</div>${{stats:statsV,orders:ordersV,prods:prodsV,design:designV,team:teamV,sets:setsV}[t]()}`}
+function statsV(){const list=db.orders.filter(inRange),a=calc(list);const stockCost=db.products.reduce((s,p)=>s+p.variants.reduce((x,v)=>x+v.cost*v.stock,0),0),stockRetail=db.products.reduce((s,p)=>s+p.variants.reduce((x,v)=>x+v.price*v.stock,0),0);
+const low=[];db.products.forEach(p=>p.variants.forEach(v=>v.stock<=5&&low.push(`${p.name} ${v.ml} мл: ${v.stock} шт`)));
+return`<select style="max-width:220px" onchange="ui.range=this.value;render()">${[['all','За всё время'],['today','Сегодня'],['7','7 дней'],['30','30 дней']].map(([k,n])=>`<option value="${k}" ${ui.range===k?'selected':''}>${n}</option>`).join('')}</select>
+<div class="kp"><div>Заказов<b>${a.n}</b></div><div>Продано шт.<b>${a.items}</b></div><div>Выручка (с НДС)<b>${fmt(a.rev)}</b></div><div>НДС ${db.settings.vat}%<b>${fmt(a.vat)}</b></div><div>Выручка без НДС<b>${fmt(a.net)}</b></div><div>Себестоимость<b>${fmt(a.cogs)}</b></div><div>Чистая прибыль<b style="color:${a.profit>=0?'var(--ok)':'var(--bad)'}">${fmt(a.profit)}</b></div><div>Маржа<b>${a.margin.toFixed(1)}%</b></div><div>Скидки клиентам<b>${fmt(a.disc)}</b></div><div>Доставка (в выручке)<b>${fmt(a.del)}</b></div></div>
+<div class="pnl"><h3>По товарам</h3><table><tr><th>Товар</th><th class="num">Шт.</th><th class="num">Выручка без НДС</th><th class="num">Себест.</th><th class="num">Прибыль</th></tr>${Object.values(a.by).map(b=>{const n=Math.round(b.rev*100/(100+db.settings.vat));return`<tr><td>${esc(b.name)}</td><td class="num">${b.qty}</td><td class="num">${fmt(n)}</td><td class="num">${fmt(b.cogs)}</td><td class="num">${fmt(n-b.cogs)}</td></tr>`}).join('')||'<tr><td colspan="5" class="mut">Продаж за период нет.</td></tr>'}</table><p class="mut" style="margin-top:6px">Прибыль по товарам без доставки. Отменённые заказы не учитываются. Скидки уже вычтены из выручки.</p></div>
+<div class="pnl"><h3>Склад</h3><div class="row"><span>В себестоимости</span><b>${fmt(stockCost)}</b></div><div class="row"><span>В розничных ценах</span><b>${fmt(stockRetail)}</b></div><p class="mut" style="margin-top:6px">${low.length?'Заканчивается: '+esc(low.join('; ')):'Остатки в норме.'}</p></div>
+<button class="g" onclick="csv()">Скачать заказы (CSV)</button>`}
+function ordersV(){const l=[...db.orders].reverse();if(!l.length)return'<p class="mut">Заказов пока нет.</p>';
+return l.map(o=>{const c=o.items.reduce((s,i)=>s+i.cost*i.qty,0);const pr=o.total-o.vat-c;return`<div class="pnl"><div class="row"><b>№${o.id} · ${new Date(o.date).toLocaleString('ru-RU')}</b>
+<select style="max-width:150px" onchange="setSt(${o.id},this.value)">${Object.entries(ST).map(([k,n])=>`<option value="${k}" ${o.status===k?'selected':''}>${n}</option>`).join('')}</select></div>
+<div>${esc(o.name)} · ${esc(o.phone)}</div><div class="chips" style="margin:6px 0">${buyerLinks(o.phone)}</div><div class="mut">${esc(o.addr)} · ${esc(o.pay)}${o.note?' · '+esc(o.note):''}</div>
+<table>${o.items.map(i=>`<tr><td>${esc(i.name)} ${i.ml} мл ${esc(i.type)}, ${esc(i.color)}</td><td class="num">${i.qty} × ${fmt(i.unit)}${i.pct?` (−${i.pct}%)`:''}</td></tr>`).join('')}</table>
+<div class="row" style="margin-top:6px"><span class="mut">Товары ${fmt(o.sub)} + доставка ${fmt(o.del)}${isOwner()?` · НДС ${fmt(o.vat)} · себест. ${fmt(c)}`:''}</span><b>${fmt(o.total)}${isOwner()?` · приб. ${fmt(pr)}`:''}</b></div></div>`}).join('')}
+function setSt(id,s){if(cloud())return api('/rest/v1/rpc/set_status',{m:'POST',body:{order_id:id,st:s}}).then(()=>{toast('Статус обновлён');return pull()}).catch(e=>{toast(e.message);pull()});const o=db.orders.find(x=>x.id===id);if(s===o.status)return;
+if(s==='cancel'){o.items.forEach(i=>{const v=P(i.pid)?.variants.find(x=>x.id===i.vid);if(v)v.stock+=i.qty})}
+else if(o.status==='cancel'){for(const i of o.items){const v=P(i.pid)?.variants.find(x=>x.id===i.vid);if(!v||v.stock<i.qty){toast('Не хватает остатка для возврата заказа в работу');return render()}}o.items.forEach(i=>P(i.pid).variants.find(x=>x.id===i.vid).stock-=i.qty)}
+o.status=s;save();render();toast('Статус обновлён')}
+function csv(){const r=[['Заказ','Дата','Телефон','Статус','Товар','Объём','Тип','Цвет','Кол-во','Цена базовая','Скидка %','Цена продажи','Себестоимость','Сумма заказа','НДС заказа']];
+db.orders.forEach(o=>o.items.forEach(i=>r.push([o.id,new Date(o.date).toLocaleString('ru-RU'),o.phone,ST[o.status],i.name,i.ml,i.type,i.color,i.qty,i.base,i.pct,i.unit,i.cost,o.total,o.vat])));
+const b=new Blob(['\ufeff'+r.map(x=>x.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(';')).join('\n')],{type:'text/csv'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='orders.csv';a.click()}
+/* товары */
+function prodsV(){return`<div class="row"><button class="r" onclick="editP()">Добавить товар</button><span class="mut">Товаров: ${db.products.length}. Без ограничений.</span></div><div class="pnl" style="margin-top:12px">${db.products.length?`<table><tr><th>Товар</th><th>Варианты (мл · тип · цена / себест. · остаток)</th><th></th></tr>${db.products.map(p=>`<tr><td><b>${esc(p.name)}</b><div class="mut">${esc(p.brand)}${p.active?'':' · скрыт'}</div></td><td>${p.variants.map(v=>`${v.ml} · ${esc(v.type)} · ${fmt(v.price)} / ${fmt(v.cost)} · ${v.stock} шт`).join('<br>')}</td><td class="num"><button class="g" onclick="editP('${p.id}')">Изменить</button> <button class="g" onclick="dupP('${p.id}')">Копия</button></td></tr>`).join('')}</table>`:'<p class="mut">Магазин пуст. Нажмите «Добавить товар» и создайте первый.</p>'}</div>`}
+function dupP(id){const c=JSON.parse(JSON.stringify(P(id)));c.id=uid();c.name+=' (копия)';c.variants.forEach(v=>v.id=uid());if(cloud())return cput(c);db.products.push(c);save();render();toast('Копия создана')}
+function editP(id){ed=id?JSON.parse(JSON.stringify(P(id))):{id:uid(),name:'',brand:'',gender:'Унисекс',desc:'',notes:'',colors:['Золотой'],img:'',active:true,variants:[V(50,'EDP',0,0,0)],isNew:true};edM()}
+function edM(){modal(`<div class="row"><h2>${ed.isNew?'Новый товар':'Изменить товар'}</h2><button class="g" onclick="closeM()">Закрыть</button></div>
+<label>Название</label><input value="${esc(ed.name)}" oninput="ed.name=this.value"><label>Бренд</label><input value="${esc(ed.brand)}" oninput="ed.brand=this.value">
+<label>Для кого</label><select onchange="ed.gender=this.value">${['Женские','Мужские','Унисекс'].map(g=>`<option ${ed.gender===g?'selected':''}>${g}</option>`).join('')}</select>
+<label>Описание</label><textarea rows="3" oninput="ed.desc=this.value">${esc(ed.desc)}</textarea><label>Ноты через запятую</label><input value="${esc(ed.notes)}" oninput="ed.notes=this.value">
+<label>Цвета флакона через запятую (Золотой, Чёрный, Прозрачный, Розовый, Синий, Красный, Серебряный, Зелёный)</label><input value="${esc(ed.colors.join(', '))}" oninput="ed.colors=this.value.split(',').map(s=>s.trim()).filter(Boolean)">
+<label>Фото (файл или ссылка)</label><input type="file" accept="image/*" onchange="upImg(this)"><input style="margin-top:6px" placeholder="https://… ссылка на фото" value="${ed.img&&!ed.img.startsWith('data:')?esc(ed.img):''}" oninput="ed.img=this.value.trim()">
+<label>Варианты</label><div class="v2 mut"><span>Мл</span><span>Тип</span><span>Цена</span><span>Себест.</span><span>Остаток</span><span></span></div>
+${ed.variants.map((v,i)=>`<div class="v2"><input type="number" value="${v.ml}" oninput="ed.variants[${i}].ml=+this.value"><input value="${esc(v.type)}" oninput="ed.variants[${i}].type=this.value"><input type="number" value="${v.price}" oninput="ed.variants[${i}].price=+this.value"><input type="number" value="${v.cost}" oninput="ed.variants[${i}].cost=+this.value"><input type="number" value="${v.stock}" oninput="ed.variants[${i}].stock=+this.value"><button class="x" onclick="ed.variants.splice(${i},1);edM()">×</button></div>`).join('')}
+<button class="g" onclick="ed.variants.push(V(50,'EDP',0,0,0));edM()">Добавить вариант</button>
+<label><input type="checkbox" style="width:auto" ${ed.active?'checked':''} onchange="ed.active=this.checked"> Показывать в магазине</label>
+<div class="row" style="margin-top:14px"><button class="r" onclick="saveP()">Сохранить</button>${ed.isNew?'':`<button class="x" onclick="delP()">Удалить</button>`}</div>`)}
+function upImg(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const k=Math.min(1,500/(im.width,im.height)),c=document.createElement('canvas');c.width=im.width*k;c.height=im.height*k;c.getContext('2d').drawImage(im,0,0,c.width,c.height);ed.img=c.toDataURL('image/jpeg',.7);toast('Фото загружено')};im.src=r.result};r.readAsDataURL(f)}
+function saveP(){if(!ed.name.trim())return toast('Введите название');if(!ed.variants.length)return toast('Добавьте хотя бы один вариант');
+for(const v of ed.variants)if(!(v.ml>0)||!(v.price>=0)||v.cost<0||v.stock<0)return toast('Проверьте объём, цену, себестоимость и остаток');
+const isNew=ed.isNew;delete ed.isNew;if(cloud())return cput(ed);if(isNew)db.products.push(ed);else db.products[db.products.findIndex(p=>p.id===ed.id)]=ed;save();closeM();render();toast('Товар сохранён')}
+function delP(){if(!confirm('Удалить товар? Прошлые заказы сохранятся.'))return;if(cloud())return api('/rest/v1/products?id=eq.'+ed.id,{m:'DELETE'}).then(()=>{closeM();return pull()}).catch(e=>toast(e.message));db.products=db.products.filter(p=>p.id!==ed.id);db.cart=db.cart.filter(i=>i.pid!==ed.id);save();closeM();render()}
+/* настройки */
+function setsV(){const s=db.settings,c=s.contacts;return`<div class="pnl"><h3>Контакты магазина для покупателей</h3><label>Телефон</label><input type="tel" value="${esc(c.phone)}" oninput="db.settings.contacts.phone=this.value;save()"><label>Telegram (имя без @)</label><input value="${esc(c.tg)}" oninput="db.settings.contacts.tg=this.value;save()"><label>WhatsApp (номер)</label><input type="tel" value="${esc(c.wa)}" oninput="db.settings.contacts.wa=this.value;save()"><label>Время работы</label><input value="${esc(c.hours)}" oninput="db.settings.contacts.hours=this.value;save()"></div><div class="pnl"><h3>Магазин и налоги</h3><label>Название</label><input value="${esc(s.shop)}" oninput="db.settings.shop=this.value;save();$('#logo').textContent=this.value">
+<label>НДС, % (входит в цену)</label><input type="number" value="${s.vat}" oninput="db.settings.vat=Math.max(0,+this.value||0);save()">
+<label>Доставка, сум</label><input type="number" value="${s.delivery}" oninput="db.settings.delivery=Math.max(0,+this.value||0);save()">
+<label>Бесплатная доставка от, сум</label><input type="number" value="${s.freeFrom}" oninput="db.settings.freeFrom=Math.max(0,+this.value||0);save()"></div>
+<div class="pnl"><h3>Скидки за количество одной позиции</h3>${s.tiers.map((t,i)=>`<div class="row" style="margin-top:6px"><span>от</span><input type="number" value="${t.min}" oninput="db.settings.tiers[${i}].min=+this.value||1;save()"><span>шт −</span><input type="number" value="${t.pct}" oninput="db.settings.tiers[${i}].pct=Math.min(90,+this.value||0);save()"><span>%</span></div>`).join('')}<p class="mut" style="margin-top:6px">Скидка считается от цены варианта и округляется до сума. Действует на новые заказы.</p></div>
+<div class="pnl"><h3>Резервная копия</h3><div class="row"><button class="g" onclick="bk()">Скачать данные (JSON)</button><label class="chip" style="margin:0;cursor:pointer">Загрузить<input type="file" accept=".json" style="display:none" onchange="rs(this)"></label></div></div>`}
+function bk(){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(db)],{type:'application/json'}));a.download='parfum-backup.json';a.click()}
+function rs(i){const f=i.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!d.products||!d.users)throw 0;db=d;save();render();toast('Данные восстановлены')}catch(e){toast('Файл не подходит')}};r.readAsText(f)}
+const dg=x=>String(x||'').replace(/\D/g,'');
+function contactLinks(){const c=db.settings.contacts,a=[];
+if(c.phone)a.push(`<a class="lnk" href="tel:+${dg(c.phone)}">Позвонить</a>`);
+if(c.tg)a.push(`<a class="lnk" target="_blank" rel="noopener" href="https://t.me/${esc(c.tg.replace('@',''))}">Telegram</a>`);
+if(c.wa)a.push(`<a class="lnk" target="_blank" rel="noopener" href="https://wa.me/${dg(c.wa)}">WhatsApp</a>`);
+return`<div class="chips">${a.join('')||'<span class="mut">Контакты скоро появятся.</span>'}</div><p class="mut" style="margin-top:6px">${esc(c.hours||'')}</p>`}
+function buyerLinks(ph){const d=dg(ph);return`<a class="lnk" href="tel:+${d}">Позвонить</a><a class="lnk" target="_blank" rel="noopener" href="https://wa.me/${d}">WhatsApp</a><a class="lnk" target="_blank" rel="noopener" href="https://t.me/+${d}">Telegram</a>`}
+function applyTheme(){const d=db.settings.design||{},r=document.documentElement.style;r.setProperty('--rose',d.gold||'#ffd000');r.setProperty('--brass',d.gold||'#ffd000');r.setProperty('--bg',d.bg||'#0b0a07')}
+const GUIDE={buyer:['Инструкция для покупателя',[
+['1. Выберите духи','Листайте каталог или введите название, бренд или ноты в строке поиска. Фильтр «Для кого» и сортировка по цене сузят выбор.'],
+['2. Настройте товар','Откройте карточку: выберите объём и тип (EDP, EDT, Parfum), цвет флакона и количество. Цена и итог пересчитываются сразу.'],
+['3. Скидка за количество','Чем больше штук одной позиции, тем ниже цена за штуку. Пороги скидок указаны в карточке товара.'],
+['4. Корзина','Нажмите «Корзина»: можно изменить количество и убрать товар. Видно доставку, итог и НДС. При крупном заказе доставка бесплатная.'],
+['5. Вход по номеру','Для заказа зарегистрируйтесь: номер телефона, имя и пароль от 4 символов. В следующий раз войдите по номеру и паролю.'],
+['6. Оформление','Укажите адрес, способ оплаты и комментарий, затем подтвердите заказ. Номер заказа появится на экране.'],
+['7. Статус заказа','В разделе аккаунта видно историю: Новый, Оплачен, Отправлен, Выполнен или Отменён.'],
+['8. Связь с нами','Кнопки «Позвонить», Telegram и WhatsApp внизу главной страницы и после оформления заказа.']]],
+staff:['Инструкция для модератора и креатора',[
+['1. Вход','Войдите по номеру телефона и паролю. После входа откроется панель управления.'],
+['2. Добавить товар','Вкладка «Товары», кнопка «Добавить товар»: название, бренд, описание, ноты, цвета флакона, фото (файл или ссылка). Количество товаров не ограничено.'],
+['3. Варианты и цены','Каждый вариант это объём, тип, цена, себестоимость и остаток. Цена любая. Вариантов можно добавлять сколько нужно. Кнопка «Копия» быстро создаёт похожий товар.'],
+['4. Фото','Для большого каталога используйте ссылки на фото. Загруженные файлы хранятся в браузере, место ограничено.'],
+['5. Заказы','Вкладка «Заказы»: смените статус. Отмена возвращает товар на склад. Для связи с покупателем нажмите «Позвонить», WhatsApp или Telegram.'],
+['6. Бухгалтерия (креатор)','Выручка, НДС, себестоимость, прибыль и маржа по периодам и по товарам. Выгрузка заказов в CSV.'],
+['7. Дизайн (креатор)','Вкладка «Дизайн»: название магазина, заголовок главной, оттенок золота и глубина чёрного.'],
+['8. Команда и контакты (креатор)','Вкладка «Команда»: создание модераторов и смена пароля. Вкладка «Настройки»: контакты магазина, НДС, доставка, скидки, резервная копия.'],
+['9. Важно','Данные хранятся в браузере. Регулярно скачивайте резервную копию в «Настройках».']]]};
+function openGuide(k){k=k||'buyer';if(k==='staff'&&!isAdmin())k='buyer';const g=GUIDE[k];
+modal(`<div class="row"><h2>Инструкция</h2><button class="g" onclick="closeM()">Закрыть</button></div>
+<div class="tabs" style="margin-top:10px"><button class="chip ${k==='buyer'?'on':''}" onclick="openGuide('buyer')">Покупателю</button>${isAdmin()?`<button class="chip ${k==='staff'?'on':''}" onclick="openGuide('staff')">Модератору</button>`:''}</div>
+<h3 style="margin-bottom:8px">${g[0]}</h3>${g[1].map(([h,t])=>`<div class="pnl"><b>${h}</b><p style="margin-top:4px">${t}</p></div>`).join('')}<button class="r" style="width:100%" onclick="pdf('${k}')">Скачать PDF</button>`)}
+function pdf(k){const g=GUIDE[k],f=document.createElement('iframe');f.style.cssText='position:fixed;width:0;height:0;border:0';document.body.appendChild(f);const d=f.contentWindow.document;d.open();
+d.write(`<html><head><meta charset="utf-8"><title>${g[0]}</title><style>body{font:14px/1.5 Arial,sans-serif;padding:30px;color:#111}h1{border-bottom:4px solid #ffc400;padding-bottom:8px}h3{margin:16px 0 2px}p{margin:0}</style></head><body><h1>${esc(db.settings.shop)}: ${g[0]}</h1>${g[1].map(([h,t])=>`<h3>${h}</h3><p>${t}</p>`).join('')}</body></html>`);d.close();
+setTimeout(()=>{f.contentWindow.focus();f.contentWindow.print();setTimeout(()=>f.remove(),3000)},300)}
+const GOLDS=['#ffd000','#ffd700','#ffc400','#f5b800','#ffdf40'],BGS=['#0b0a07','#000000','#111111'];
+function designV(){const d=db.settings.design;return`<div class="pnl"><h3>Дизайн магазина</h3><p class="mut">Стиль строго чёрный с ярким золотом: меняются оттенок золота и глубина чёрного.</p>
+<label>Название магазина</label><input value="${esc(db.settings.shop)}" oninput="db.settings.shop=this.value;save();$('#logo').textContent=this.value">
+<label>Заголовок на главной</label><input value="${esc(d.title)}" oninput="db.settings.design.title=this.value;save()">
+<label>Подзаголовок</label><input value="${esc(d.sub)}" oninput="db.settings.design.sub=this.value;save()">
+<label>Золото</label><div class="chips">${GOLDS.map(c=>`<button class="sw ${d.gold===c?'on':''}" style="background:${c}" aria-label="${c}" onclick="db.settings.design.gold='${c}';save();render()"></button>`).join('')}</div>
+<label>Чёрный фон</label><div class="chips">${BGS.map(c=>`<button class="sw ${d.bg===c?'on':''}" style="background:${c}" aria-label="${c}" onclick="db.settings.design.bg='${c}';save();render()"></button>`).join('')}</div></div>`}
+function teamV(){const m=db.users.filter(u=>u.role==='mod');
+return`<div class="pnl"><h3>Модераторы</h3><p class="mut">Модератор ведёт товары и заказы. Бухгалтерия, дизайн, команда и настройки доступны только креатору.</p>${m.map(u=>`<div class="row" style="margin-top:6px"><span>${esc(u.name)} · ${esc(u.phone)}</span><button class="x" onclick="delMod('${esc(u.phone)}')">Удалить</button></div>`).join('')||'<p class="mut">Модераторов пока нет.</p>'}</div>
+<div class="pnl"><h3>Добавить модератора</h3><label>Телефон</label><input id="mp" type="tel"><label>Имя</label><input id="mn"><label>Пароль (от 4 символов)</label><input id="mw" type="password"><button class="r" style="margin-top:10px" onclick="addMod()">Создать</button></div>
+<div class="pnl"><h3>Сменить пароль креатора</h3><input id="np" type="password" placeholder="Новый пароль"><button class="r" style="margin-top:10px" onclick="chPw()">Сохранить</button></div>`}
+async function addMod(){const ph=normPh($('#mp').value),nm=$('#mn').value.trim(),pw=$('#mw').value;if(!ph||!nm||pw.length<4)return toast('Заполните телефон, имя и пароль от 4 символов');if(db.users.some(u=>u.phone===ph))return toast('Номер уже зарегистрирован');if(cloud())return cmod(ph,nm,pw);db.users.push({phone:ph,name:nm,pw:await hash(ph+pw),role:'mod',created:Date.now()});save();render();toast('Модератор создан')}
+function delMod(p){if(!confirm('Удалить модератора?'))return;if(cloud())return api('/rest/v1/profiles?phone=eq.'+encodeURIComponent(p),{m:'PATCH',body:{role:'user'}}).then(pull).catch(e=>toast(e.message));db.users=db.users.filter(u=>!(u.phone===p&&u.role==='mod'));save();render()}
+async function chPw(){const v=$('#np').value;if(v.length<4)return toast('Минимум 4 символа');if(cloud()){try{await api('/auth/v1/user',{m:'PUT',body:{password:v}});toast('Пароль изменён')}catch(e){toast(e.message)}$('#np').value='';return}me().pw=await hash(me().phone+v);save();$('#np').value='';toast('Пароль изменён')}
+/* ---- облако (Supabase) ---- */
+const mail=ph=>'u'+dg(ph)+'@example.com';
+async function api(path,o={},retry=1){const r=await fetch(CFG.url+path,{method:o.m||'GET',headers:{apikey:CFG.key,Authorization:'Bearer '+(tok||CFG.key),'Content-Type':'application/json',...(o.h||{})},body:o.body?JSON.stringify(o.body):undefined});
+if(r.status===401&&tok&&retry){try{await rf();return api(path,o,0)}catch(e){tok=null}}
+const t=await r.text();let j=null;try{j=t?JSON.parse(t):null}catch(e){j=t}
+if(!r.ok)throw new Error((j&&(j.message||j.msg||j.error_description||j.error))||r.statusText);return j}
+function setSess(j){tok=j.access_token;try{localStorage.setItem('pm_sess',JSON.stringify({r:j.refresh_token}))}catch(e){}}
+async function rf(){const s=JSON.parse(localStorage.getItem('pm_sess')||'null');if(!s)throw 0;const r=await fetch(CFG.url+'/auth/v1/token?grant_type=refresh_token',{method:'POST',headers:{apikey:CFG.key,'Content-Type':'application/json'},body:JSON.stringify({refresh_token:s.r})});if(!r.ok)throw 0;setSess(await r.json())}
+async function cinit(){try{await rf()}catch(e){tok=null}await pull();setInterval(()=>{if(tok&&ui.view==='admin'&&ui.tab==='orders'&&!$('#modal').innerHTML)pull()},30000)}
+async function pull(){try{let own=null;db.users=[];db.session=null;
+if(tok){try{const u=await api('/auth/v1/user'),pr=await api('/rest/v1/profiles?select=*');db.users=pr.map(p=>({id:p.id,phone:p.phone,name:p.name,role:p.role}));own=db.users.find(p=>p.id===u.id)||null;db.session=own?own.phone:null}catch(e){tok=null;db.users=[];own=null}}
+const st=!!own&&['admin','mod'].includes(own.role);
+const pr2=await api('/rest/v1/'+(st?'products':'products_public')+'?select=*&order=updated.asc');db.products=pr2.map(r=>({...r.data,id:r.id,active:r.active}));
+const se=await api('/rest/v1/settings?id=eq.1&select=data');if(se[0])db.settings={...seed().settings,...se[0].data};
+db.orders=tok?(await api('/rest/v1/'+(st?'orders':'orders_mine')+'?select=*&order=id.asc')).map(o=>({...o,date:Date.parse(o.created)})):[]
+}catch(e){toast('Нет связи с базой: '+e.message)}render()}
+let _pt;function pushSet(){if(!isOwner())return;clearTimeout(_pt);_pt=setTimeout(()=>api('/rest/v1/settings?on_conflict=id',{m:'POST',body:{id:1,data:db.settings},h:{Prefer:'resolution=merge-duplicates'}}).catch(e=>toast('Настройки не сохранены: '+e.message)),700)}
+async function cauth(t){const ph=normPh($('#ph').value);if(!ph)return toast('Введите корректный номер');const pw=$('#pw').value;if(pw.length<6)return toast('Пароль от 6 символов');
+try{let j;if(t==='up'){const nm=$('#nm').value.trim();if(!nm)return toast('Введите имя');j=await api('/auth/v1/signup',{m:'POST',body:{email:mail(ph),password:pw,data:{name:nm}},h:{Authorization:'Bearer '+CFG.key}});if(!j.access_token)throw new Error('В Supabase отключите Confirm email')}
+else j=await api('/auth/v1/token?grant_type=password',{m:'POST',body:{email:mail(ph),password:pw},h:{Authorization:'Bearer '+CFG.key}});
+setSess(j);await pull();closeM();toast('Вы вошли');if(isAdmin())go('admin')}catch(e){toast(/Invalid login/i.test(e.message)?'Неверный номер или пароль':/already|registered/i.test(e.message)?'Этот номер уже зарегистрирован':e.message)}}
+async function cplace(ad){try{const id=await api('/rest/v1/rpc/place_order',{m:'POST',body:{items:db.cart.map(i=>({pid:i.pid,vid:i.vid,color:i.color,qty:i.qty})),addr:ad,pay:$('#pay').value,note:$('#cm').value.trim()}});db.cart=[];save();await pull();const o=db.orders.find(x=>x.id==id);
+modal(`<h2>Заказ №${id} принят</h2><p style="margin:8px 0">Сумма: <b>${fmt(o?o.total:0)}</b>. Мы свяжемся с вами по номеру ${esc(me()?me().phone:'')}.</p>${contactLinks()}<button style="margin-top:10px" onclick="closeM()">Хорошо</button>`)}catch(e){toast(e.message)}}
+function cput(p){const {id,active,...data}=p;return api('/rest/v1/products?on_conflict=id',{m:'POST',body:{id,active,data},h:{Prefer:'resolution=merge-duplicates'}}).then(()=>{closeM();toast('Товар сохранён');return pull()}).catch(e=>toast(e.message))}
+async function cmod(ph,nm,pw){try{await api('/auth/v1/signup',{m:'POST',body:{email:mail(ph),password:pw,data:{name:nm}},h:{Authorization:'Bearer '+CFG.key}});await api('/rest/v1/profiles?phone=eq.'+encodeURIComponent(ph),{m:'PATCH',body:{role:'mod'}});await pull();toast('Модератор создан')}catch(e){toast(e.message)}}
+/* старт */
+(async()=>{if(!cloud()&&!db.users.some(u=>u.role==='admin')){db.users.push({phone:'+998900000000',name:'Креатор',pw:await hash('+998900000000admin123'),role:'admin',created:Date.now()});save()}
+try{const t=window.Telegram?.WebApp;if(t){t.ready();t.expand()}}catch(e){}if(cloud())await cinit();render()})();
+</script></body></html>
